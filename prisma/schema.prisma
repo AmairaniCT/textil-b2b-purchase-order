@@ -32,3 +32,11 @@ model Session {
   refreshToken        String?
   refreshTokenExpires DateTime?
 }
+
+model PurchaseOrderSequence {
+  id            Int      @id @default(autoincrement())
+  year          Int      @unique
+  currentNumber Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
