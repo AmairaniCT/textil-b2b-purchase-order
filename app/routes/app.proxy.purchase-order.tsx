@@ -1,6 +1,7 @@
 import { data, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
+import { sendBuyerConfirmationEmail, sendSellerEmail } from "../services/email.server";
 
 type BuyerData = {
   name?: string;
@@ -296,6 +297,20 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const folio = await generateConsecutiveFolio();
     const draftOrder = await createDraftOrder(payload, folio);
+
+    await sendSellerEmail({
+      folio,
+      draftOrderName: draftOrder.name,
+      buyer,
+      items,
+    });
+
+    await sendBuyerConfirmationEmail({
+      folio,
+      draftOrderName: draftOrder.name,
+      buyer,
+      items,
+    });
 
     console.log("Draft order creada correctamente:", {
       folio,
