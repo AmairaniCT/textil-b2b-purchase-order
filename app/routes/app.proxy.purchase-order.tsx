@@ -1,11 +1,11 @@
-import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
+import { data, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   try {
     await authenticate.public.appProxy(request);
 
-    return json({
+    return data({
       ok: true,
       method: "GET",
       message: "Endpoint App Proxy funcionando correctamente",
@@ -15,7 +15,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   } catch (error) {
     console.error("Error validando App Proxy:", error);
 
-    return json(
+    return data(
       {
         ok: false,
         message: "No se pudo validar el App Proxy",
@@ -32,10 +32,10 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const payload = await request.json().catch(() => ({}));
 
-    return json({
+    return data({
       ok: true,
       method: "POST",
-      message: "Orden recibida correctamente en Remix",
+      message: "Orden recibida correctamente en la app",
       received: payload,
       url: request.url,
       timestamp: new Date().toISOString(),
@@ -43,7 +43,7 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error) {
     console.error("Error procesando App Proxy:", error);
 
-    return json(
+    return data(
       {
         ok: false,
         message: "No se pudo validar o procesar la solicitud",
