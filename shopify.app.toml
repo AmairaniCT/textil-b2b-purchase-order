@@ -52,7 +52,7 @@ redirect_urls = [
 ]
 
 [build]
-automatically_update_urls_on_dev = true
+automatically_update_urls_on_dev = false
 
 [app_proxy]
 url = "https://textil-b2b-purchase-order-1.onrender.com/app/proxy/purchase-order"

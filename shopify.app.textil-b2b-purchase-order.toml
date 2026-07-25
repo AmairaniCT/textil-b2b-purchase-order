@@ -1,6 +1,4 @@
-# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
-
-client_id = "9e276b22938f671ff1c83df1c66ae824"
+client_id = "233a3350d33c4a12a10872641f892c2f"
 application_url = "https://textil-b2b-purchase-order-1.onrender.com"
 embedded = true
 name = "textil-b2b-purchase-order"
@@ -27,8 +25,7 @@ redirect_urls = [
 ]
 
 [build]
-include_config_on_deploy = true
-automatically_update_urls_on_dev = true
+automatically_update_urls_on_dev = false
 
 [app_proxy]
 url = "https://textil-b2b-purchase-order-1.onrender.com/app/proxy/purchase-order"

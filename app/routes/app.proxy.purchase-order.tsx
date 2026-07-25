@@ -1,6 +1,13 @@
 import { data, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 
+function generateTemporaryFolio() {
+  const year = new Date().getFullYear();
+  const randomNumber = Math.floor(Math.random() * 9000) + 1000;
+
+  return `OC-TEXTIL-${year}-${randomNumber}`;
+}
+
 export async function loader({ request }: LoaderFunctionArgs) {
   try {
     await authenticate.public.appProxy(request);
@@ -32,10 +39,19 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const payload = await request.json().catch(() => ({}));
 
+    const folio = generateTemporaryFolio();
+
+    console.log("Nueva orden de compra recibida:", {
+      folio,
+      buyer: payload?.buyer,
+      items: payload?.items,
+    });
+
     return data({
       ok: true,
       method: "POST",
       message: "Orden recibida correctamente en la app",
+      folio,
       received: payload,
       url: request.url,
       timestamp: new Date().toISOString(),
