@@ -1,11 +1,28 @@
 import { data, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
+import db from "../db.server";
 
-function generateTemporaryFolio() {
+async function generateConsecutiveFolio() {
   const year = new Date().getFullYear();
-  const randomNumber = Math.floor(Math.random() * 9000) + 1000;
 
-  return `OC-TEXTIL-${year}-${randomNumber}`;
+  const sequence = await db.purchaseOrderSequence.upsert({
+    where: {
+      year,
+    },
+    update: {
+      currentNumber: {
+        increment: 1,
+      },
+    },
+    create: {
+      year,
+      currentNumber: 1,
+    },
+  });
+
+  const paddedNumber = String(sequence.currentNumber).padStart(6, "0");
+
+  return `OC-TEXTIL-${year}-${paddedNumber}`;
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -39,12 +56,32 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const payload = await request.json().catch(() => ({}));
 
-    const folio = generateTemporaryFolio();
+    if (!payload?.buyer?.email) {
+      return data(
+        {
+          ok: false,
+          message: "El correo del comprador es obligatorio.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!payload?.items || !Array.isArray(payload.items) || payload.items.length === 0) {
+      return data(
+        {
+          ok: false,
+          message: "La orden no contiene productos.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const folio = await generateConsecutiveFolio();
 
     console.log("Nueva orden de compra recibida:", {
       folio,
-      buyer: payload?.buyer,
-      items: payload?.items,
+      buyer: payload.buyer,
+      items: payload.items,
     });
 
     return data({
@@ -65,7 +102,7 @@ export async function action({ request }: ActionFunctionArgs) {
         message: "No se pudo validar o procesar la solicitud",
         url: request.url,
       },
-      { status: 401 }
+      { status: 500 }
     );
   }
 }
