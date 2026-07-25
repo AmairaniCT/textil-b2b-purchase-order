@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "9e276b22938f671ff1c83df1c66ae824"
-application_url = "https://enlisted-cornstalk-stood.ngrok-free.dev"
+application_url = "https://textil-b2b-purchase-order-1.onrender.com"
 embedded = true
 name = "textil-b2b-purchase-order"
 
@@ -21,9 +21,9 @@ api_version = "2026-10"
 
 [auth]
 redirect_urls = [
-  "https://enlisted-cornstalk-stood.ngrok-free.dev/auth/callback",
-  "https://enlisted-cornstalk-stood.ngrok-free.dev/auth/shopify/callback",
-  "https://enlisted-cornstalk-stood.ngrok-free.dev/api/auth/callback"
+  "https://textil-b2b-purchase-order-1.onrender.com/auth/callback",
+  "https://textil-b2b-purchase-order-1.onrender.com/auth/shopify/callback",
+  "https://textil-b2b-purchase-order-1.onrender.com/api/auth/callback"
 ]
 
 [build]
@@ -31,6 +31,6 @@ include_config_on_deploy = true
 automatically_update_urls_on_dev = true
 
 [app_proxy]
-url = "https://enlisted-cornstalk-stood.ngrok-free.dev/app/proxy/purchase-order"
+url = "https://textil-b2b-purchase-order-1.onrender.com/app/proxy/purchase-order"
 subpath = "purchase-order"
 prefix = "apps"
