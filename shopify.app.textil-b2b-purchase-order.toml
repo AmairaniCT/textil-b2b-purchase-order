@@ -1,0 +1,36 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "9e276b22938f671ff1c83df1c66ae824"
+application_url = "https://enlisted-cornstalk-stood.ngrok-free.dev"
+embedded = true
+name = "textil-b2b-purchase-order"
+
+[access_scopes]
+scopes = "write_draft_orders,read_draft_orders,read_products,read_customers,write_customers,write_app_proxy"
+
+[webhooks]
+api_version = "2026-10"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = [ "app/uninstalled" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/scopes_update"
+  topics = [ "app/scopes_update" ]
+
+[auth]
+redirect_urls = [
+  "https://enlisted-cornstalk-stood.ngrok-free.dev/auth/callback",
+  "https://enlisted-cornstalk-stood.ngrok-free.dev/auth/shopify/callback",
+  "https://enlisted-cornstalk-stood.ngrok-free.dev/api/auth/callback"
+]
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true
+
+[app_proxy]
+url = "https://enlisted-cornstalk-stood.ngrok-free.dev/app/proxy/purchase-order"
+subpath = "purchase-order"
+prefix = "apps"

@@ -1,0 +1,60 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "233a3350d33c4a12a10872641f892c2f"
+application_url = "https://enlisted-cornstalk-stood.ngrok-free.dev"
+embedded = true
+name = "textil-b2b-purchase-order"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_draft_orders,read_draft_orders,read_products,read_customers,write_customers,write_app_proxy,write_products"
+
+[product.metafields.app.demo_info]
+type = "single_line_text_field"
+name = "Demo Source Info"
+description = "Tracks products created by the Shopify app template for development"
+
+  [product.metafields.app.demo_info.access]
+  admin = "merchant_read_write"
+
+[metaobjects.app.example]
+name = "Example"
+description = "An example metaobject definition created by this template"
+
+  [metaobjects.app.example.access]
+  admin = "merchant_read_write"
+
+[metaobjects.app.example.fields.title]
+name = "Title"
+type = "single_line_text_field"
+required = true
+
+[metaobjects.app.example.fields.description]
+name = "Description"
+type = "multi_line_text_field"
+
+[webhooks]
+api_version = "2026-10"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = [ "app/uninstalled" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/scopes_update"
+  topics = [ "app/scopes_update" ]
+
+[auth]
+redirect_urls = [
+  "https://enlisted-cornstalk-stood.ngrok-free.dev/auth/callback",
+  "https://enlisted-cornstalk-stood.ngrok-free.dev/auth/shopify/callback",
+  "https://enlisted-cornstalk-stood.ngrok-free.dev/api/auth/callback"
+]
+
+[build]
+automatically_update_urls_on_dev = true
+
+[app_proxy]
+url = "https://enlisted-cornstalk-stood.ngrok-free.dev/app/proxy/purchase-order"
+subpath = "purchase-order"
+prefix = "apps"
