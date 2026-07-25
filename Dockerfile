@@ -9,7 +9,8 @@ ENV NODE_ENV=production
 
 COPY package.json package-lock.json* ./
 
-RUN npm ci --omit=dev && npm cache clean --force
+# CÁMBIALO AQUÍ: usa npm install en lugar de npm ci
+RUN npm install --omit=dev && npm cache clean --force
 
 COPY . .
 
