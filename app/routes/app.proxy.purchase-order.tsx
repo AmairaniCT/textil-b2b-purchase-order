@@ -1,5 +1,5 @@
 import { data, type ActionFunctionArgs, type LoaderFunctionArgs } from "react-router";
-import { authenticate } from "../shopify.server";
+import { authenticate, unauthenticated } from "../shopify.server";
 import db from "../db.server";
 
 type BuyerData = {
@@ -65,6 +65,17 @@ function normalizeQuantity(quantity: unknown) {
   return Math.floor(parsed);
 }
 
+function getShopFromRequest(request: Request) {
+  const url = new URL(request.url);
+  const shop = url.searchParams.get("shop");
+
+  if (!shop) {
+    throw new Error("No se encontró el parámetro shop en la solicitud.");
+  }
+
+  return shop;
+}
+
 function buildDraftOrderNote(folio: string, buyer: BuyerData, payload: PurchaseOrderPayload) {
   return [
     `Folio: ${folio}`,
@@ -91,9 +102,9 @@ function buildDraftOrderNote(folio: string, buyer: BuyerData, payload: PurchaseO
 
 function buildLineItems(items: PurchaseOrderItem[]) {
   return items.map((item) => {
-    const variantId = item.shopifyVariantGid || (
-      item.variantId ? `gid://shopify/ProductVariant/${item.variantId}` : ""
-    );
+    const variantId =
+      item.shopifyVariantGid ||
+      (item.variantId ? `gid://shopify/ProductVariant/${item.variantId}` : "");
 
     if (!variantId) {
       throw new Error(`El producto "${item.title || "sin título"}" no tiene variantId.`);
@@ -176,6 +187,14 @@ async function createDraftOrder(admin: any, payload: PurchaseOrderPayload, folio
   const result = await response.json();
   const createResult = result.data?.draftOrderCreate;
 
+  if (result.errors?.length) {
+    const graphQLErrorMessage = result.errors
+      .map((error: { message: string }) => error.message)
+      .join(" | ");
+
+    throw new Error(graphQLErrorMessage);
+  }
+
   if (createResult?.userErrors?.length) {
     const errorMessage = createResult.userErrors
       .map((error: { field?: string[]; message: string }) => {
@@ -221,7 +240,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   try {
-    const { admin } = await authenticate.public.appProxy(request);
+    await authenticate.public.appProxy(request);
+
+    const shop = getShopFromRequest(request);
+    const { admin } = await unauthenticated.admin(shop);
 
     const payload = (await request.json().catch(() => ({}))) as PurchaseOrderPayload;
     const buyer = payload.buyer || {};
@@ -252,6 +274,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     console.log("Draft order creada correctamente:", {
       folio,
+      shop,
       draftOrderId: draftOrder.id,
       draftOrderName: draftOrder.name,
       buyerEmail: buyer.email,
@@ -265,7 +288,6 @@ export async function action({ request }: ActionFunctionArgs) {
       draftOrderId: draftOrder.id,
       draftOrderName: draftOrder.name,
       invoiceUrl: draftOrder.invoiceUrl,
-      received: payload,
       url: request.url,
       timestamp: new Date().toISOString(),
     });
